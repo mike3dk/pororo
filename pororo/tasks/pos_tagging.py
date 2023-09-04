@@ -162,7 +162,7 @@ class PororoMecabPos(PororoSimpleBase):
         """
         # Should split line with tap since comma is frequently used in input sentence
         morph = unit[0]
-        features = unit[1]
+        features = unit[2]
         pos = features.pos
         analysis = features.expression
 
