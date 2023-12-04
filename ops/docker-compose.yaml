@@ -1,0 +1,9 @@
+version: '3'
+name: pororo
+services:
+  pororo:
+    container_name: pororo
+    build:
+      context: ../
+      dockerfile: ops/Dockerfile
+    restart: alwayss

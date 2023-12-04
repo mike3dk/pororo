@@ -1,19 +1,12 @@
-FROM pytorch/pytorch:1.6.0-cuda10.1-cudnn7-devel
+FROM ubuntu:focal
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y wget
-
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
-RUN mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
-RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub
-RUN add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && \
     apt upgrade -y && \
-    apt install -y \
-    apt-utils \
+    apt install -y apt-utils \
     git \
     gcc \
     wget \
@@ -42,7 +35,7 @@ RUN apt update && \
 RUN pip install --upgrade pip
 
 # 2. install python-mecab-ko
-RUN pip install python-mecab-ko==1.0.9
+RUN pip install python-mecab-ko==1.3.3
 
 # 3. install pororo
 RUN pip install pororo
@@ -52,10 +45,11 @@ RUN pip install soundfile \
     torchaudio==0.6.0 \
     pydub
 
-RUN conda install -y -c conda-forge librosa
+# RUN conda install -y -c conda-forge librosa
 
 # 5. install etc modules
-RUN pip install librosa \
+RUN pip install \
+    librosa \
     kollocate \
     koparadigm \
     g2pk \
@@ -78,17 +72,41 @@ RUN pip install librosa \
     numba==0.48 \
     ko_pron
 
-WORKDIR /app/external_lib
+RUN pip install \
+    torch==1.6.0 \
+    torchvision==0.7.0 \
+    # pillow==4.1.1 \
+    fairseq==0.10.2 \
+    transformers==4.1.1 \
+    sentence_transformers==0.4.1.2 \
+    nltk==3.5 \
+    word2word \
+    wget \
+    joblib \
+    lxml \
+    g2p_en \
+    whoosh \
+    marisa-trie \
+    kss \
+    dataclasses \
+    six \
+    numpy==1.23.5
 
-RUN git clone https://github.com/kpu/kenlm.git
-WORKDIR /app/external_lib/kenlm/build
-RUN cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON
-RUN make
-ENV KENLM_ROOT_DIR="/app/external_lib/kenlm/"
+# WORKDIR /app/external_lib
 
-WORKDIR /app/external_lib
-RUN git clone -b v0.2 https://github.com/facebookresearch/wav2letter.git
-WORKDIR /app/external_lib/wav2letter/bindings/python
-RUN pip install -e .
+# RUN git clone https://github.com/kpu/kenlm.git
+# WORKDIR /app/external_lib/kenlm/build
+# RUN cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+# RUN make
+# ENV KENLM_ROOT_DIR="/app/external_lib/kenlm/"
+
+# WORKDIR /app/external_lib
+# RUN git clone -b v0.2 https://github.com/facebookresearch/wav2letter.git
+# WORKDIR /app/external_lib/wav2letter/bindings/python
+# RUN pip install -e .
 
 WORKDIR /app
+COPY command /app/command
+COPY pororo /app/pororo
+
+RUN python3 /app/command/run_ner.py "오사카"
