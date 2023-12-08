@@ -92,6 +92,10 @@ RUN pip install \
     six \
     numpy==1.23.5
 
+RUN pip install \
+    fastapi \
+    uvicorn
+
 # WORKDIR /app/external_lib
 
 # RUN git clone https://github.com/kpu/kenlm.git
@@ -106,7 +110,10 @@ RUN pip install \
 # RUN pip install -e .
 
 WORKDIR /app
-COPY command /app/command
+COPY src /app/src
 COPY pororo /app/pororo
 
-RUN python3 /app/command/run_ner.py "오사카"
+RUN python3 /app/src/run_ner.py "오사카"
+
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "5001"]
+

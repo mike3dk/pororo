@@ -6,4 +6,7 @@ services:
     build:
       context: ../
       dockerfile: ops/Dockerfile
-    restart: alwayss
+    ports:
+      - 5001:5001
+    restart: always
+    # network_mode: host

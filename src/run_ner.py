@@ -2,6 +2,7 @@ import sys
 import json
 from pororo.pororo import Pororo
 
+
 def main(text):
     ner = Pororo(task="ner", lang="ko")
     out = json.dumps(ner(text), ensure_ascii=False)
